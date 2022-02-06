@@ -416,8 +416,14 @@ def fastsurfercnn(img_filename, save_as, use_cuda, gpu_small, logger, args):
 
     # Saving image
     header_info.set_data_dtype(np.int16)
-    mapped_aseg_img = nib.MGHImage(pred_prob, affine_info, header_info)
-    mapped_aseg_img.to_filename(save_as)
+    
+    if save_as.endswith('.nii.gz') or save_as.endswith('.nii'):
+        mapped_aseg_img = nib.Nifti1Image(pred_prob, affine_info, header_info)
+        nib.nifti1.save(mapped_aseg_img, save_as)
+    else:
+        mapped_aseg_img = nib.MGHImage(pred_prob, affine_info, header_info)
+        mapped_aseg_img.to_filename(save_as)
+        
     logger.info("Saving Segmentation to {}".format(save_as))
     logger.info("Total processing time: {:0.4f} seconds.".format(time.time() - start_total))
 
